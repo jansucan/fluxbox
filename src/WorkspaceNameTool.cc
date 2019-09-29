@@ -40,7 +40,7 @@ WorkspaceNameTool::WorkspaceNameTool(const FbTk::FbWindow &parent,
     m_pixmap(0) {
     // set text
     m_button.setGC(m_theme->textGC());
-    m_button.setText(m_screen.currentWorkspace()->name());
+    m_button.setText(getWorkspaceNameList());
 
     // setup signals
     join(screen.currentWorkspaceSig(),
@@ -71,7 +71,7 @@ void WorkspaceNameTool::moveResize(int x, int y,
 }
 
 void WorkspaceNameTool::update() {
-    m_button.setText(m_screen.currentWorkspace()->name());
+    m_button.setText(getWorkspaceNameList());
     if (m_button.width() != width()) {
         resize(width(), height());
         resizeSig().emit();
@@ -86,11 +86,7 @@ unsigned int WorkspaceNameTool::width() const {
         return m_button.width();
     unsigned int max_size = 0;
 
-    const BScreen::Workspaces& workspaces = m_screen.getWorkspacesList();
-    BScreen::Workspaces::const_iterator it;
-    for (it = workspaces.begin(); it != workspaces.end(); ++it) {
-        max_size = std::max(m_theme->font().textWidth((*it)->name()), max_size);
-    }
+    max_size = m_theme->font().textWidth(getWorkspaceNameList());
     // so align text dont cut the last character
     max_size += 2;
 
@@ -157,4 +153,18 @@ void WorkspaceNameTool::renderTheme(int alpha) {
 void WorkspaceNameTool::setOrientation(FbTk::Orientation orient) {
     m_button.setOrientation(orient);
     ToolbarItem::setOrientation(orient);
+}
+
+FbTk::FbString WorkspaceNameTool::getWorkspaceNameList() const {
+    FbTk::FbString nameList("");
+    Workspace * ws;
+    const Workspace * cws = m_screen.currentWorkspace();
+
+    for (unsigned int i = 0; (ws = m_screen.getWorkspace(i)) != 0; ++i) {
+        nameList.append((ws == cws) ? "[" : " ");
+        nameList.append(ws->name());
+        nameList.append((ws == cws) ? "]" : " ");
+    }
+
+    return nameList;
 }

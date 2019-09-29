@@ -63,6 +63,7 @@ private:
     void renderTheme(int alpha);
     void reRender();
     void updateSizing();
+    FbTk::FbString getWorkspaceNameList() const;
     FbTk::TextButton m_button;
     const FbTk::ThemeProxy<ToolTheme> &m_theme;
     BScreen &m_screen;
